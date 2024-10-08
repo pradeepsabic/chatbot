@@ -1,0 +1,9 @@
+langchain
+langchain-community
+langchain_openai
+pypdf
+chromadb
+fastapi
+uvicorn
+gunicorn
+loguru

@@ -1,0 +1,4 @@
+2024-10-08 21:33:21.098 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: Not Found at http://127.0.0.1:8000/favicon.ico
+2024-10-08 21:36:56.761 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat
+2024-10-08 21:39:57.086 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat
+2024-10-08 21:40:09.404 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat

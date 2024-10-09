@@ -76,19 +76,27 @@ def get_chatbot_response(query: str, retriever):
         and then provide an appropriate response.
 
         User's message: "{query}"
+        
+        Assistant's intent: (greeting, farewell, question, fallback)
 
         Assistant's response:
         """
         response = qa_chain.invoke(prompt)
         answer_text = response['result']
+        
+        # Extract the assistant's intent from the model's response
+        if "Assistant's intent:" in answer_text:
+            intent = extract_intent(answer_text)
+        else:
+            intent = "general"
+        
         formatted_response = answer_text.replace("\\n", "\n")
         
          # Check for fallback condition- chatbot do not understand you and fall to understand
         if "I don't understand" in formatted_response or "Can you rephrase" in formatted_response:
             return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?"
-        
-        
-        return formatted_response #response['result']  # Format the response as needed
+               
+        return formatted_response,intent #response['result']  # Format the response as needed
     
     # Catching any errors related to invalid query processing
     except ValueError as ve:
@@ -100,3 +108,12 @@ def get_chatbot_response(query: str, retriever):
     # Catching any other general exceptions
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    
+# Function to extract the detected intent from the model's response
+def extract_intent(response: str) -> str:
+    intent_line = [line for line in response.split("\n") if "Assistant's intent:" in line]
+    if intent_line:
+        intent = intent_line[0].split(":")[1].strip().lower()
+        return intent
+    return "general"
+

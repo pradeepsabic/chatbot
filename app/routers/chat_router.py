@@ -46,13 +46,20 @@ def chat_with_bot(user_input: UserInput):
         logger.info(f"User input received: {user_input.query}")
         query = user_input.query
         
-        # Get the chatbot response
-        response = get_chatbot_response(query, retriever)
+        # Get the chatbot response and intent also
+        response,intent  = get_chatbot_response(query, retriever)
         if not response:
             raise HTTPException(status_code=500, detail="No response generated.")
         
+        
         follow_up_message = "\n\nHope you are satisfied with the answer. Do you have any other queries?"
-        return {"response": response + follow_up_message}
+        
+        # Append the follow-up message only if the intent is not a greeting, farewell, or fallback for this we have passed 
+        #Assistant's intent: in prompt & calling function to get the intention extract_intent(response: str)
+        if intent not in ["greeting", "farewell", "fallback"]:
+            response += follow_up_message
+            
+        return {"response": response}
     
     except Exception as ex:
         logger.error(f"Error processing request: {str(ex)}")

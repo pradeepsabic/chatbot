@@ -2,3 +2,5 @@
 2024-10-08 21:36:56.761 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat
 2024-10-08 21:39:57.086 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat
 2024-10-08 21:40:09.404 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: No documents have been processed. Please check the PDF files in the directory. at http://127.0.0.1:8000/chat
+2024-10-09 18:10:17.563 | ERROR    | app.routers.chat_router:chat_with_bot:64 - Error processing request: too many values to unpack (expected 2)
+2024-10-09 18:10:17.593 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: too many values to unpack (expected 2) at http://127.0.0.1:8000/chat

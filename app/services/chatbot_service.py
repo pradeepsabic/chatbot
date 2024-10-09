@@ -68,9 +68,26 @@ def get_chatbot_response(query: str, retriever):
     try:
         llm = ChatOpenAI()
         qa_chain = RetrievalQA.from_llm(llm=llm, retriever=retriever)
-        response = qa_chain.invoke(query)
+        
+        # Define the prompt for intent detection and response generation
+        prompt = f"""
+        The following is a conversation between a user and an assistant. 
+        The assistant should first determine the user's intent based on their message 
+        and then provide an appropriate response.
+
+        User's message: "{query}"
+
+        Assistant's response:
+        """
+        response = qa_chain.invoke(prompt)
         answer_text = response['result']
         formatted_response = answer_text.replace("\\n", "\n")
+        
+         # Check for fallback condition- chatbot do not understand you and fall to understand
+        if "I don't understand" in formatted_response or "Can you rephrase" in formatted_response:
+            return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?"
+        
+        
         return formatted_response #response['result']  # Format the response as needed
     
     # Catching any errors related to invalid query processing

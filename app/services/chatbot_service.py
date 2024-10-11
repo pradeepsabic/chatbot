@@ -134,6 +134,9 @@ def extract_intent(response: str) -> str:
     intent_line = [line for line in response.split("\n") if "Assistant's intent:" in line]
     if intent_line:
         intent = intent_line[0].split(":")[1].strip().lower()
-        return intent
+        if intent in ["greeting", "farewell", "question", "complaint", "feedback", "fallback"]:
+            return intent
+        else:
+            return "general"
     return "general"
 

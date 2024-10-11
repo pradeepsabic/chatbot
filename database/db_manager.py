@@ -7,11 +7,11 @@ class DBManager:
         self.conn = pyodbc.connect(DATABASE_CONNECTION_STRING)
         self.cursor = self.conn.cursor()
 
-    def save_query_to_db(self, query: str, intent: str):
+    def save_query_to_db(self, query: str, intent: str,sentiment:str):
         timestamp = datetime.now()
         self.cursor.execute(
-            "INSERT INTO ChatbotQueries (Query, Intent, Timestamp) VALUES (?, ?, ?)", 
-            (query, intent, timestamp)
+            "INSERT INTO ChatbotQueries (Query, Intent, sentiment, Timestamp) VALUES (?, ?, ?,?)", 
+            (query, intent, sentiment, timestamp)
         )
         self.conn.commit()
 

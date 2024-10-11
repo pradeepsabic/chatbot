@@ -10,6 +10,7 @@ import os
 from fastapi import HTTPException
 from loguru import logger
 from database.db_manager import DBManager  #to store query in sql server
+from analysis.sentiment_analyzer import  analyze_sentiment_per_query #for sentiment analysis 
 
 # Load PDF and preprocess here we call our method from text_utils chunk_text
 def load_and_preprocess_pdf(pdf_path:str):
@@ -91,10 +92,15 @@ def get_chatbot_response(query: str, retriever):
         else:
             intent = "general"
         
-        # Save the query and intent to the database
+        #finding sentiment of query
+        # Step 2: Perform sentiment analysis
+        sentiment = analyze_sentiment_per_query(query)
+    
+        # Save the query and intent and sentiment to the database
+        
         logger.info("before hitting db")
         db_manager = DBManager() 
-        db_manager.save_query_to_db(query, intent)
+        db_manager.save_query_to_db(query, intent,sentiment)
         logger.info("after hitting db")
         
         

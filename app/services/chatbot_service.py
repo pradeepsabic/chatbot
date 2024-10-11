@@ -9,6 +9,7 @@ from app.utils.text_utils import clean_text,chunk_text #from text_utils.py
 import os
 from fastapi import HTTPException
 from loguru import logger
+from database.db_manager import DBManager  #to store query in sql server
 
 # Load PDF and preprocess here we call our method from text_utils chunk_text
 def load_and_preprocess_pdf(pdf_path:str):
@@ -89,6 +90,13 @@ def get_chatbot_response(query: str, retriever):
             intent = extract_intent(answer_text)
         else:
             intent = "general"
+        
+        # Save the query and intent to the database
+        logger.info("before hitting db")
+        db_manager = DBManager() 
+        db_manager.save_query_to_db(query, intent)
+        logger.info("after hitting db")
+        
         
         formatted_response = answer_text.replace("\\n", "\n")
         

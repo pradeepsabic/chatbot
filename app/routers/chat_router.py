@@ -47,11 +47,12 @@ def chat_with_bot(user_input: UserInput):
         query = user_input.query
         
         # Get the chatbot response and intent also
-        response,intent  = get_chatbot_response(query, retriever)
-        if not response:
-            raise HTTPException(status_code=500, detail="No response generated.")
+        response,intent,sentiment   = get_chatbot_response(query, retriever)
+        if not response or not intent:
+            raise HTTPException(status_code=500, detail="Response or intent generation failed.")
         
-        
+        logger.info(f"Chatbot Response in chat_router.py: {response}, Intent: {intent}")
+
         follow_up_message = "\n\nHope you are satisfied with the answer. Do you have any other queries?"
         
         # Append the follow-up message only if the intent is not a greeting, farewell, or fallback for this we have passed 
@@ -59,7 +60,13 @@ def chat_with_bot(user_input: UserInput):
         if intent not in ["greeting", "farewell", "fallback"]:
             response += follow_up_message
             
-        return {"response": response}
+        # Return the final response object with all details
+        return {
+            "response": response,
+            "intent": intent,
+            "sentiment": sentiment,
+            "query": query
+        }
     
     except Exception as ex:
         logger.error(f"Error processing request: {str(ex)}")

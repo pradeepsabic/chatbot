@@ -79,13 +79,16 @@ def get_chatbot_response(query: str, retriever):
 
         User's message: "{query}"
         
-        Assistant's intent: (greeting, farewell, question, fallback)
+        Assistant's intent: (greeting, farewell, question, complaint, feedback, fallback)
 
         Assistant's response:
         """
         response = qa_chain.invoke(prompt)
         answer_text = response['result']
         
+        
+        logger.info("answer_text from  chatbot_service after invoking qa_chain")
+        logger.info(answer_text)
         # Extract the assistant's intent from the model's response
         if "Assistant's intent:" in answer_text:
             intent = extract_intent(answer_text)
@@ -110,17 +113,20 @@ def get_chatbot_response(query: str, retriever):
         if "I don't understand" in formatted_response or "Can you rephrase" in formatted_response:
             return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?"
                
-        return formatted_response,intent #response['result']  # Format the response as needed
+        return formatted_response,intent,sentiment #response['result']  # Format the response as needed
     
     # Catching any errors related to invalid query processing
     except ValueError as ve:
+        logger.error(f"ValueError in get_chatbot_response: {str(ve)}")
         raise HTTPException (status_code=422,detail=ve)
     
     # Catching any issues related to the retriever or model
     except KeyError  as ke:
+       logger.error(f"keyerror in get_chatbot_response: {str(ve)}")
        raise HTTPException(status_code=500, detail=f"Response formatting error: {str(ke)}")
     # Catching any other general exceptions
     except Exception as e:
+        logger.error(f"Unexpected error in get_chatbot_response: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     
 # Function to extract the detected intent from the model's response

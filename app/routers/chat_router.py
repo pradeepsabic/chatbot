@@ -57,7 +57,7 @@ def chat_with_bot(user_input: UserInput):
         
         # Append the follow-up message only if the intent is not a greeting, farewell, or fallback for this we have passed 
         #Assistant's intent: in prompt & calling function to get the intention extract_intent(response: str)
-        if intent not in ["greeting", "farewell", "fallback"]:
+        if intent not in ["greeting", "farewell", "fallback", "complaint"]:
             response += follow_up_message
             
         # Return the final response object with all details

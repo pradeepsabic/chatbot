@@ -111,7 +111,7 @@ def get_chatbot_response(query: str, retriever):
         
          # Check for fallback condition- chatbot do not understand you and fall to understand
         if "I don't understand" in formatted_response or "Can you rephrase" in formatted_response:
-            return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?"
+            return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?", intent, sentiment
                
         return formatted_response,intent,sentiment #response['result']  # Format the response as needed
     
@@ -131,12 +131,14 @@ def get_chatbot_response(query: str, retriever):
     
 # Function to extract the detected intent from the model's response
 def extract_intent(response: str) -> str:
+    # Ensure that the response contains the expected "Assistant's intent:" format
     intent_line = [line for line in response.split("\n") if "Assistant's intent:" in line]
     if intent_line:
-        intent = intent_line[0].split(":")[1].strip().lower()
+        intent = intent_line[0].split(":")[1].strip().lower()  # Extracting the intent
+        # Check for valid intents and return
         if intent in ["greeting", "farewell", "question", "complaint", "feedback", "fallback"]:
             return intent
         else:
-            return "general"
-    return "general"
+            return "general"  # If the extracted intent is invalid, default to general
+    return "general"  # Default to general if intent line is not found
 

@@ -11,6 +11,7 @@ from fastapi import HTTPException
 from loguru import logger
 from database.db_manager import DBManager  #to store query in sql server
 from analysis.sentiment_analyzer import  analyze_sentiment_per_query #for sentiment analysis 
+from app.utils.prompts import get_chatbot_prompt
 
 # Load PDF and preprocess here we call our method from text_utils chunk_text
 def load_and_preprocess_pdf(pdf_path:str):
@@ -72,17 +73,7 @@ def get_chatbot_response(query: str, retriever):
         qa_chain = RetrievalQA.from_llm(llm=llm, retriever=retriever)
         
         # Define the prompt for intent detection and response generation
-        prompt = f"""
-        The following is a conversation between a user and an assistant. 
-        The assistant should first determine the user's intent based on their message 
-        and then provide an appropriate response.
-
-        User's message: "{query}"
-        
-        Assistant's intent: (greeting, farewell, question, complaint, feedback, fallback)
-
-        Assistant's response:
-        """
+        prompt =  get_chatbot_prompt(query) #prompts are defined inside utils->prompts
         response = qa_chain.invoke(prompt)
         answer_text = response['result']
         
@@ -95,6 +86,9 @@ def get_chatbot_response(query: str, retriever):
         else:
             intent = "general"
         
+        # Extract additional information from the response
+        extracted_info = extract_information(answer_text) # like name issue description and priority
+        logger.info(extracted_info)
         #finding sentiment of query
         # Step 2: Perform sentiment analysis
         sentiment = analyze_sentiment_per_query(query)
@@ -142,3 +136,21 @@ def extract_intent(response: str) -> str:
             return "general"  # If the extracted intent is invalid, default to general
     return "general"  # Default to general if intent line is not found
 
+# extract information like name, issue description, and priority from the response
+def extract_information(response: str) -> dict:
+    info_lines = [line for line in response.split("\n") if "Extracted information" in line]
+    if info_lines:
+        extracted_info = info_lines[0].split(":")[1].strip()  # Extract the information details
+        # Further parse the information into name, issue, priority (based on your prompt format)
+        # Example: 'name: John Doe, issue description: login issue, priority: high'
+        info_dict = {"name": None, "issue_description": None, "priority": None}
+        info_parts = extracted_info.split(",")
+        for part in info_parts:
+            if "name" in part:
+                info_dict["name"] = part.split(":")[1].strip()
+            elif "issue description" in part:
+                info_dict["issue_description"] = part.split(":")[1].strip()
+            elif "priority" in part:
+                info_dict["priority"] = part.split(":")[1].strip()
+        return info_dict
+    return {"name": None, "issue_description": None, "priority": None}

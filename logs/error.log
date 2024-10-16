@@ -52,3 +52,4 @@
 2024-10-11 22:35:36.048 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: not enough values to unpack (expected 3, got 2) at http://127.0.0.1:8000/chat
 2024-10-11 22:38:20.994 | ERROR    | app.routers.chat_router:chat_with_bot:72 - Error processing request: name 'sentiment' is not defined
 2024-10-11 22:38:20.995 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: name 'sentiment' is not defined at http://127.0.0.1:8000/chat
+2024-10-16 16:05:09.868 | ERROR    | app.errors.handlers:http_exception_handler:18 - HTTP error: Not Found at http://127.0.0.1:8000/favicon.ico

@@ -107,7 +107,8 @@ def get_chatbot_response(query: str, retriever):
         if "I don't understand" in formatted_response or "Can you rephrase" in formatted_response:
             return "I'm sorry, but I didn't quite understand that. Can you please rephrase your question?", intent, sentiment
                
-        return formatted_response,intent,sentiment #response['result']  # Format the response as needed
+        return formatted_response,intent,sentiment   # Format the response as needed for ticketing we can add extracted_info & pass back in caht_router
+    
     
     # Catching any errors related to invalid query processing
     except ValueError as ve:

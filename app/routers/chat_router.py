@@ -5,6 +5,7 @@ from app.services.chatbot_service import load_and_preprocess_pdf, setup_vector_s
 from fastapi import APIRouter,HTTPException
 from contextlib import asynccontextmanager
 from loguru import logger
+from ticketing.service_now import log_ticket_in_service_now # for logging ticket in ticketing system (servicenow)
 
 router = APIRouter()
 
@@ -30,6 +31,8 @@ def load_pdf():
     except Exception as ex:
         logger.error(f"Error loading PDF: {str(ex)}")
         retriever = None  # Ensure retriever is None on error
+        ticket_status = None # for service now
+        ticket_number = None # for service now
 
 # Call the function to load the PDF at startup
 load_pdf()
@@ -47,7 +50,17 @@ def chat_with_bot(user_input: UserInput):
         query = user_input.query
         
         # Get the chatbot response and intent also
-        response,intent,sentiment   = get_chatbot_response(query, retriever)
+        response,intent,sentiment   = get_chatbot_response(query, retriever) 
+        #here response,intent,sentiment,extracted_info we can have extracted info 
+        
+        # If it's a complaint or high-priority issue, log a ticket
+        #if intent == "complaint": #or extracted_info.get("priority", "").lower() == "high":
+            #ticket_number = log_ticket_in_service_now(extracted_info)
+        #if ticket_number:
+            #ticket_status = f"Ticket logged successfully with Ticket Number: {ticket_number}"
+        #else:
+            #ticket_status = "Failed to log the ticket."
+            
         if not response or not intent:
             raise HTTPException(status_code=500, detail="Response or intent generation failed.")
         
@@ -67,6 +80,9 @@ def chat_with_bot(user_input: UserInput):
             "sentiment": sentiment,
             "query": query
         }
+        #in return add ticket status and ticekt number also
+        #"ticket_status": ticket_status, 
+        #"ticket_number": ticket_number
     
     except Exception as ex:
         logger.error(f"Error processing request: {str(ex)}")
